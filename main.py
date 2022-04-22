@@ -1,20 +1,17 @@
 import cv2 as cv
-from cv2 import imshow
-from cv2 import blur
 import numpy as np
 from matplotlib import pyplot as plt
 
-img = cv.imread('./demo.jpg',1)
+img = cv.imread('./source.jpg',1)
 
 def method(image):
     """
     去除图像噪声然后二值化图像
     """
-    blurred = cv.pyrMeanShiftFiltering(image, 10, 100)
+    blurred = cv.pyrMeanShiftFiltering(image, 70, 100)
     gray = cv.cvtColor(blurred, cv.COLOR_BGR2GRAY)
-    show("gray",gray)
+
     t, binary = cv.threshold(gray, 127, 255, cv.THRESH_BINARY | cv.THRESH_OTSU)
-    show("binary",binary)
     return binary
 
 def findOutline(binary,img):
@@ -33,7 +30,6 @@ def findOutline(binary,img):
     
     #在img中画出轮廓
     cv.drawContours(img,contours,-1,(0,0,255),3)
-    show("contours",contours)
     return img
 
 
@@ -46,25 +42,9 @@ def show(titles,images):
     plt.xticks([]),plt.yticks([])
     plt.show()
 
-def gain(image):
-    """
-    获取黑色区域的
-    """
-    blurred = cv.pyrMeanShiftFiltering(image, 10, 100)
-    hsv = cv.cvtColor(blurred, cv.COLOR_BGR2HSV)
- 
-    # HSV中黑色范围
-    lower_blue = np.array([0,0,0]) 
-    upper_blue = np.array([180,255,46]) 
- 
-    # 获得黑色区域的mask
-    mask = cv.inRange(hsv, lower_blue, upper_blue)
-
-    return mask
-    
  
 def main(image):
-    show("Original Image",image)
+    show("OriginalImage",image)
     binary=method(image)
     contours=findOutline(binary,image)
     cv.imwrite("result.jpg",contours)
